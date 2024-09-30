@@ -32,7 +32,8 @@ class NeuralNetwork(nn.Module):
         logits = self.linear_relu_stack(x)
         return logits
 
-'''We create an instance of NeuralNetwork, move it to the device, and print its structure.'''
+
+"""We create an instance of NeuralNetwork, move it to the device, and print its structure."""
 
 model = NeuralNetwork().to(device)
 print(model)
@@ -40,7 +41,7 @@ print(model)
 # We get the prediction densities by passing it through an instance of the nn.Softmax.
 
 X = torch.rand(1, 28, 28, device=device)
-logits = model(X) 
+logits = model(X)
 pred_probab = nn.Softmax(dim=1)(logits)
 y_pred = pred_probab.argmax(1)
 print(f"Predicted class: {y_pred}")
@@ -53,7 +54,7 @@ print(f"First Linear biases: {model.linear_relu_stack[0].bias} \n")
 
 #  model layers
 
-input_image = torch.rand(3,28,28)
+input_image = torch.rand(3, 28, 28)
 print(input_image.size())
 
 # nn.Flatten
@@ -61,3 +62,35 @@ print(input_image.size())
 flatten = nn.Flatten()
 flat_image = flatten(input_image)
 print(flat_image.size())
+
+# nn.Linear
+
+layer1 = nn.Linear(in_features=28 * 28, out_features=20)
+hidden1 = layer1(flat_image)
+print(hidden1.size())
+
+# nn.ReLU
+
+print(f"Before ReLU: {hidden1}\n\n")
+hidden1 = nn.ReLU()(hidden1)
+print(f"After ReLU: {hidden1}")
+
+# nn.Sequential
+
+seq_modules = nn.Sequential(flatten, layer1, nn.ReLU(), nn.Linear(20, 10))
+input_image = torch.rand(3, 28, 28)
+logits = seq_modules(input_image)
+
+# nn.Softmax
+
+softmax = nn.Softmax(dim=1)
+pred_probab = softmax(logits)
+
+# Model Parameters
+"""softmax = nn.Softmax(dim=1)
+pred_probab = softmax(logits)"""
+
+print("Model structure: ", model, "\n\n")
+
+for name, param in model.named_parameters():
+    print(f"Layer: {name} | Size: {param.size()} | Values : {param[:2]} \n")
